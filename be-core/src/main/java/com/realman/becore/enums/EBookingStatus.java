@@ -6,10 +6,10 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum EBookingStatus {
-    PENDING(0),
-    ACCEPTED(1),
-    REJECTED(2),
-    ABORTED(3);
+    ONGOING(0),
+    COMFIRMED(1),
+    CANCLED(2),
+    REJECTED(3);
 
     private Integer value;
 }

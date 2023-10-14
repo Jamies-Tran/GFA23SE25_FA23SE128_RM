@@ -1,6 +1,7 @@
 package com.realman.becore.service.customer;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.realman.becore.dto.customer.Customer;
 
@@ -12,12 +13,15 @@ import lombok.RequiredArgsConstructor;
 public class CustomerUserCaseService {
     @NonNull
     private final CustomerCommandService customerCommandService;
+    @NonNull
+    private final CustomerQueryService customerQueryService;
 
-    public Long save(Customer customer) {
-        return customerCommandService.save(customer);
+    @Transactional
+    public void save(Customer customer) {
+        customerCommandService.save(customer);
     }
 
-    public void updateAccountId(Long customerId, Long accountId) {
-        customerCommandService.updateAccountId(customerId, accountId);
+    public Customer findByAccountId(Long accountId) {
+        return customerQueryService.findByAccountId(accountId);
     }
 }

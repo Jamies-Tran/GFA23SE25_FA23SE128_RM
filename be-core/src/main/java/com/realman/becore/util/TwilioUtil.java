@@ -7,7 +7,7 @@ import com.twilio.type.PhoneNumber;
 public class TwilioUtil {
 
     public static void sendOTP(String phone, String otp) {
-        phone = phone.replace(String.valueOf(phone.charAt(0)), "+84");
+        phone = "+84" + phone.substring(1);
         Twilio.init(TwilioProperties.ACCOUNT_SID, TwilioProperties.AUTH_TOKEN);
         StringBuilder messageBuilder = new StringBuilder();
         messageBuilder.append("Mật khẩu đăng nhập của quí khách là: ").append(otp);

@@ -7,7 +7,7 @@ import com.realman.becore.repository.database.otp.OTPEntity;
 
 @Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface OTPMapper {
-    OTPEntity toEntity(String passCode, Long accountId);
+    OTPEntity toEntity(String passCode, String phoneAttemp);
 
     OTP toDto(OTPEntity entity);
 }

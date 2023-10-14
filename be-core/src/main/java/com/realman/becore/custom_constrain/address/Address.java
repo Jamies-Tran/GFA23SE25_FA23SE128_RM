@@ -13,7 +13,7 @@ import jakarta.validation.Payload;
 @Constraint(validatedBy = AddressValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface AddressConstrain {
+public @interface Address {
     String message() default "Địa chỉ không hợp lệ";
 
     Class<?>[] groups() default {};

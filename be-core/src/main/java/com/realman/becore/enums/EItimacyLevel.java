@@ -6,9 +6,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum EItimacyLevel {
-    LEVEL_1(0),
-    LEVEL_2(1),
-    LEVEL_3(2);
+    UNRANK(0),
+    BRONZE(1),
+    SILVER(2),
+    GOLD(3),
+    PLATINUM(4);
 
     private Integer value;
 }

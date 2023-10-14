@@ -19,7 +19,6 @@ public class CustomerEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long customerId;
-    private Long itimacyId;
     private Long accountId;
     private Long serviceCount = 0L;
     private Long profitProvided = 0L;

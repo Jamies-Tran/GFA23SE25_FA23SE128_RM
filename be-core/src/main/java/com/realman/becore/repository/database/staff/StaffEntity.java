@@ -11,9 +11,11 @@ import jakarta.persistence.Id;
 
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,5 +27,5 @@ public class StaffEntity implements Serializable {
     private Long staffId;
     private Long accountId;
     private EProfessional professional;
-    private Double averageRating = 0.0;
+    private Double averageRating;
 }

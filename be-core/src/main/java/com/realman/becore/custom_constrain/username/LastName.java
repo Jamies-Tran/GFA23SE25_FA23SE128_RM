@@ -10,11 +10,11 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Documented
-@Constraint(validatedBy = UsernameValidator.class)
+@Constraint(validatedBy = LastNameValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface UsernameConstrain {
-    String message() default "Username không hợp lệ";
+public @interface LastName {
+    String message() default "Tên không hợp lệ";
 
     Class<?>[] groups() default {};
 

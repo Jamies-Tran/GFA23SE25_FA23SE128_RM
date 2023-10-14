@@ -1,14 +1,13 @@
 package com.realman.becore.service.account;
 
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.realman.becore.controller.api.account.models.ERoleRequest;
-import com.realman.becore.controller.api.account.models.LoginRequest;
-import com.realman.becore.controller.api.account.models.LoginResponse;
+import com.realman.becore.controller.api.account.models.AccountId;
+import com.realman.becore.controller.api.account.models.AccountRole;
 import com.realman.becore.dto.account.Account;
+import com.realman.becore.dto.otp.OTP;
 
-import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -21,23 +20,38 @@ public class AccountUseCaseService {
     @NonNull
     private final AccountCommandService accountCommandService;
 
-    @NonNull
-    private final AutowireCapableBeanFactory autowireCapableBeanFactory;
-
+    /**
+     * create account for customer
+     * 
+     * @param account
+     * @param otp
+     */
     @Transactional
-    public void save(Account account, ERoleRequest roleRequest) {
+    public void save(Account account, OTP otp) {
+        accountCommandService.save(account, otp);
+    }
+
+    /**
+     * create account for staff, receptionist, branch manager, shop owner
+     * 
+     * @param account
+     * @param roleRequest
+     */
+    @Transactional
+    public void save(Account account, AccountRole roleRequest) {
         accountCommandService.save(account, roleRequest);
     }
 
-    public Account findAccountByUsername(String username) {
-        return accountQueryService.findAccountByUsername(username);
+    @Transactional
+    public void update(AccountId accountId, Account account) {
+        accountCommandService.update(accountId, account);
     }
 
-    public Account findAccountByPhone(String phone) {
-        return accountQueryService.findAccountByPhone(phone);
+    public Account findByPhone(String phone) {
+        return accountQueryService.findByPhone(phone);
     }
 
-    public LoginResponse login(LoginRequest loginRequest) {
-        return accountQueryService.login(loginRequest);
+    public Account findById(AccountId accountId) {
+        return accountQueryService.findById(accountId);
     }
 }

@@ -1,5 +1,10 @@
 package com.realman.becore.dto.shop_owner;
 
-public record ShopOwner() {
+import lombok.Builder;
+
+@Builder
+public record ShopOwner(
+                Long shopOwnerId,
+                Long accountId) {
 
 }

@@ -5,10 +5,10 @@ import java.util.Objects;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class AddressValidator implements ConstraintValidator<AddressConstrain, String> {
+public class AddressValidator implements ConstraintValidator<Address, String> {
 
     @Override
-    public void initialize(AddressConstrain constraintAnnotation) {
+    public void initialize(Address constraintAnnotation) {
 
         ConstraintValidator.super.initialize(constraintAnnotation);
     }

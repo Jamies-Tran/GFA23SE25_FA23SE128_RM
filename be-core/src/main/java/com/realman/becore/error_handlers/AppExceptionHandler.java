@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.http.HttpStatus;
-
+import org.springframework.validation.ObjectError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -33,6 +34,17 @@ public class AppExceptionHandler {
             errors.put(fieldError, errorMsg);
         });
         return errors;
+    }
+
+    @ResponseStatus(code = HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    ResponseMessage methodArgumentNotValidException(MethodArgumentNotValidException exc) {
+
+        return new ResponseMessage(ESysError.RM_API.name(),
+                EErrorDes.RESOURCE_NOT_VALID.name(),
+                exc.getAllErrors().stream()
+                        .map(ObjectError::getDefaultMessage).findAny().orElse(""),
+                LocalDateTime.now());
     }
 
     @ResponseStatus(code = HttpStatus.NOT_ACCEPTABLE)

@@ -1,5 +1,11 @@
 package com.realman.becore.dto.branch_manager;
 
-public record BranchManager() {
+import lombok.Builder;
+
+@Builder
+public record BranchManager(
+        Long branchManagerId,
+        Long branchId,
+        Long accountId) {
 
 }

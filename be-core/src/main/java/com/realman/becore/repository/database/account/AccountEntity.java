@@ -3,9 +3,6 @@ package com.realman.becore.repository.database.account;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import com.realman.becore.custom_constrain.address.AddressConstrain;
-import com.realman.becore.custom_constrain.phone.PhoneConstrain;
-import com.realman.becore.custom_constrain.username.UsernameConstrain;
 import com.realman.becore.enums.EGender;
 import com.realman.becore.enums.ERole;
 import jakarta.persistence.Column;
@@ -29,18 +26,11 @@ public class AccountEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long accountId;
-    private Long staffId;
-    private Long customerId;
-    private Long shopOwnerId;
-    private Long branchManagerId;
-    private Long receptionistId;
-    private Long otpId;
-    @UsernameConstrain
     @Column(columnDefinition = "NVARCHAR(500)")
-    private String username;
-    @PhoneConstrain
+    private String firstName;
+    @Column(columnDefinition = "NVARCHAR(500)")
+    private String lastName;
     private String phone;
-    @AddressConstrain
     @Column(columnDefinition = "NVARCHAR(500)")
     private String address;
     @Temporal(TemporalType.TIMESTAMP)

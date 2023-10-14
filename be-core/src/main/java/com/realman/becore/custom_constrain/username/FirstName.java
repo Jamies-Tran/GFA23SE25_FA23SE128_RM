@@ -1,4 +1,4 @@
-package com.realman.becore.custom_constrain.phone;
+package com.realman.becore.custom_constrain.username;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -10,11 +10,11 @@ import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
 @Documented
+@Constraint(validatedBy = FirstNameValidator.class)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = PhoneValidator.class)
-@Target({ ElementType.FIELD, ElementType.TYPE })
-public @interface PhoneConstrain {
-    String message() default "Số điện thoại không hợp lệ";
+@Target({ElementType.FIELD, ElementType.METHOD})
+public @interface FirstName {
+    String message() default "Họ không hợp lệ";
 
     Class<?>[] groups() default {};
 

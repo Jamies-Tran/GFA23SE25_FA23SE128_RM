@@ -17,7 +17,8 @@ public enum EErrorMessage {
     ITIMACY_NOT_FOUNT(8),
     USERNAME_DUPLICATED(9),
     PHONE_DUPLICATED(10),
-    ACCOUNT_NOT_VALID(11);
+    ACCOUNT_NOT_VALID(11),
+    PROFESSIONAL_NOT_FOUND(4);
 
     private final Integer value;
 }

@@ -1,5 +1,10 @@
 package com.realman.becore.dto.receptionist;
 
-public record Receptionist() {
+import lombok.Builder;
+
+@Builder
+public record Receptionist(
+                Long receptionistId,
+                Long accountId) {
 
 }
