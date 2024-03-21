@@ -29,7 +29,7 @@ class _BranchOptionBookingState extends State<BranchOptionBooking>
     return SingleChildScrollView(
         child: Column(
       children: [
-        // 1
+        // 1 chon chi nhanh
         ChooseBranchBooking(onBranchSelected: updateSelectedBranch),
 
         // 2
