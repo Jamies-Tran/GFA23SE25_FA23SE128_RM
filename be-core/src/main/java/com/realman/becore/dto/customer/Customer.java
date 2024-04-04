@@ -1,8 +1,12 @@
 package com.realman.becore.dto.customer;
 
+import lombok.Builder;
+
+@Builder
 public record Customer(
-        Long id,
-        Long serviceCount,
-        Long profitProvided) {
+                Long customerId,
+                Long accountId,
+                Long serviceCount,
+                Long profitProvided) {
 
 }

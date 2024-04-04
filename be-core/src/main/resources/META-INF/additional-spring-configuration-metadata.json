@@ -1,29 +1,54 @@
 {
-    "properties": [
-        {
-            "name": "JwtSecretKey",
-            "type": "java.lang.String",
-            "description": "A description for 'JwtSecretKey'"
-        },
-        {
-            "name": "JwtExpiredTime",
-            "type": "java.lang.Long",
-            "description": "A description for 'JwtExpiredTime'"
-        },
-        {
-            "name": "AccountSID",
-            "type": "java.lang.String",
-            "description": "A description for 'AccountSID'"
-        },
-        {
-            "name": "AuthToken",
-            "type": "java.lang.String",
-            "description": "A description for 'AuthToken'"
-        },
-        {
-            "name": "TwilioPhoneNumber",
-            "type": "java.lang.String",
-            "description": "A description for 'TwilioPhoneNumber'"
-        }
-    ]
+  "properties": [
+    {
+      "name": "AccountSID",
+      "type": "java.lang.String",
+      "description": "A description for 'AccountSID'"
+    },
+    {
+      "name": "AuthToken",
+      "type": "java.lang.String",
+      "description": "A description for 'AuthToken'"
+    },
+    {
+      "name": "TwilioPhoneNumber",
+      "type": "java.lang.String",
+      "description": "A description for 'TwilioPhoneNumber'"
+    },
+    {
+      "name": "goong.place.autocomplete",
+      "type": "java.lang.String",
+      "description": "A description for 'goong.autocomplete'"
+    },
+    {
+      "name": "goong.place.detail",
+      "type": "java.lang.String",
+      "description": "A description for 'goong.place.detail'"
+    },
+    {
+      "name": "goong.distance",
+      "type": "java.lang.String",
+      "description": "A description for 'goong.distance'"
+    },
+    {
+      "name": "goong.api.key",
+      "type": "java.lang.String",
+      "description": "A description for 'goong.api.key'"
+    },
+    {
+      "name": "goong.geometry",
+      "type": "java.lang.String",
+      "description": "A description for 'goong.geometry'"
+    },
+    {
+      "name": "jwt.secret.key",
+      "type": "java.lang.String",
+      "description": "A description for 'jwt.secret.key'"
+    },
+    {
+      "name": "jwt.expired.time",
+      "type": "java.lang.String",
+      "description": "A description for 'jwt.expired.time'"
+    }
+  ]
 }

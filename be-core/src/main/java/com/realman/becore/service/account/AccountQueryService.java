@@ -1,24 +1,31 @@
 package com.realman.becore.service.account;
 
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.Optional;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import com.realman.becore.controller.api.account.models.LoginRequest;
-import com.realman.becore.controller.api.account.models.LoginResponse;
+import com.realman.becore.controller.api.otp.models.ValidAccount;
 import com.realman.becore.dto.account.Account;
+import com.realman.becore.dto.account.AccountId;
+import com.realman.becore.dto.account.AccountInfo;
 import com.realman.becore.dto.account.AccountMapper;
-import com.realman.becore.dto.account_otp.AccountOtp;
-import com.realman.becore.enums.EErrorMessage;
-import com.realman.becore.error_handlers.exceptions.AuthFailException;
-import com.realman.becore.error_handlers.exceptions.ResourceDuplicateException;
+import com.realman.becore.dto.account.AccountSearchCriteria;
+import com.realman.becore.dto.branch.Branch;
+import com.realman.becore.dto.branch.BranchId;
+import com.realman.becore.dto.customer.Customer;
+import com.realman.becore.dto.enums.EAccountStatus;
+import com.realman.becore.dto.enums.ERole;
+import com.realman.becore.dto.staff.Staff;
 import com.realman.becore.error_handlers.exceptions.ResourceNotFoundException;
 import com.realman.becore.repository.database.account.AccountEntity;
 import com.realman.becore.repository.database.account.AccountRepository;
-import com.realman.becore.repository.database.otp.OTPEntity;
-import com.realman.becore.security.jwt.JwtConfiguration;
+import com.realman.becore.service.branch.BranchUseCaseService;
+import com.realman.becore.service.customer.CustomerUseCaseService;
+import com.realman.becore.service.staff.StaffUsecaseService;
+import com.realman.becore.util.response.PageRequestCustom;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -26,53 +33,87 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class AccountQueryService {
-    @NonNull
-    private final AccountRepository accountRepository;
-    @NonNull
-    private final AccountMapper accountMapper;
-    @NonNull
-    private final PasswordEncoder passwordEncoder;
-    @NonNull
-    private final JwtConfiguration jwtConfiguration;
+        @NonNull
+        private final AccountRepository accountRepository;
+        @NonNull
+        private final AccountMapper accountMapper;
+        @NonNull
+        private final CustomerUseCaseService customerUserCaseService;
+        @NonNull
+        private final StaffUsecaseService staffUsercaseService;
+        @NonNull
+        private final BranchUseCaseService branchUseCaseService;
 
-    public Account findAccountByUsername(String username) {
-        AccountEntity entity = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new ResourceNotFoundException(EErrorMessage.ACCOUNT_NOT_FOUND.name()));
-        return accountMapper.toDto(entity);
-    }
-
-    public Account findAccountByPhone(String phone) {
-        AccountEntity entity = accountRepository.findByPhone(phone)
-                .orElseThrow(() -> new ResourceNotFoundException(EErrorMessage.ACCOUNT_NOT_FOUND.name()));
-        return accountMapper.toDto(entity);
-    }
-
-    public void verifyAccount(Account account) {
-        if (accountRepository.findByUsername(account.username()).isPresent()) {
-            throw new ResourceDuplicateException(EErrorMessage.USERNAME_DUPLICATED.name());
+        public Account findByPhone(String phone) {
+                AccountEntity entity = accountRepository
+                                .findByPhone(phone)
+                                .orElseThrow(ResourceNotFoundException::new);
+                Account account = accountMapper.toDto(entity);
+                if (entity.getRole().equals(ERole.STAFF) || entity.getRole().equals(ERole.RECEPTIONIST)) {
+                        Staff staff = staffUsercaseService.findByAccountId(entity.getAccountId());
+                        Branch branch = branchUseCaseService.findByAccountId(entity.getAccountId());
+                        account = accountMapper.toDto(entity, staff, branch);
+                } else if (entity.getRole().equals(ERole.CUSTOMER)) {
+                        Customer customer = customerUserCaseService.findByAccountId(entity.getAccountId());
+                        account = accountMapper.toDto(entity, customer);
+                }
+                return account;
         }
 
-        if (accountRepository.findByPhone(account.phone()).isPresent()) {
-            throw new ResourceDuplicateException(EErrorMessage.PHONE_DUPLICATED.name());
+        public ValidAccount isAccountExist(String phone) {
+                Optional<AccountEntity> entity = accountRepository.findByPhone(phone);
+                Boolean isAccountExist = entity.isPresent();
+                Boolean isAccountActivated = entity.isPresent()
+                                ? entity.get().getStatus().equals(EAccountStatus.ACTIVATED)
+                                : false;
+                return new ValidAccount(isAccountExist, isAccountActivated);
         }
-    }
 
-    public LoginResponse login(LoginRequest loginRequest) {
-        List<Object[]> query = accountRepository.findAccountAndOtpByPhone(loginRequest.phone());
-
-        AccountEntity accountEntity = (AccountEntity) query.get(0)[0];
-        OTPEntity otpEntity = (OTPEntity) query.get(0)[1];
-        if (!passwordEncoder.matches(loginRequest.passCode(),
-                otpEntity.getPassCode())) {
-            throw new AuthFailException(EErrorMessage.ACCOUNT_NOT_VALID.name());
+        public Account findStaffAccount(AccountId accountId, Boolean isShowDistance, Double lat, Double lng) {
+                AccountInfo info = accountRepository.findStaffAccount(accountId.value())
+                                .orElseThrow(ResourceNotFoundException::new);
+                Staff staff = staffUsercaseService.findByAccountId(accountId.value());
+                Branch branch = branchUseCaseService
+                                .findById(new BranchId(info.getBranchId()), isShowDistance, lat, lng);
+                return accountMapper.fromInfo(info, staff, branch);
         }
-        String jwtToken = jwtConfiguration.generateJwt(accountEntity.getUsername());
-        LocalDateTime expiredTime = jwtConfiguration.expireTime();
-        return LoginResponse.builder()
-                .username(accountEntity.getUsername())
-                .jwtToken(jwtToken)
-                .expTime(expiredTime)
-                .role(accountEntity.getRole())
-                .build();
-    }
+
+        public Account findCustomerAccount(AccountId accountId) {
+                AccountInfo info = accountRepository.findCustomerAccount(accountId.value())
+                                .orElseThrow(ResourceNotFoundException::new);
+                return accountMapper.fromInfo(info);
+        }
+
+        public Account findManagerAccount(AccountId accountId) {
+                AccountInfo info = accountRepository.findManagerAccount(accountId.value())
+                                .orElseThrow(ResourceNotFoundException::new);
+                return accountMapper.fromInfo(info);
+        }
+
+        public Account findById(AccountId accountId) {
+                AccountInfo info = accountRepository.findByAccountId(accountId.value())
+                                .orElseThrow(ResourceNotFoundException::new);
+                return accountMapper.fromInfo(info);
+        }
+
+        public Page<Account> findAll(AccountSearchCriteria searchCriteria,
+                        PageRequestCustom pageRequestCustom) {
+                Page<AccountInfo> infoList = accountRepository.findAll(searchCriteria.toLowerCase(),
+                                pageRequestCustom.pageRequest());
+                return infoList.map(info -> {
+                        Branch branch = branchUseCaseService.findById(new BranchId(info.getBranchId()),
+                                        searchCriteria.isShowDistance(), searchCriteria.lat(), searchCriteria.lng());
+                        Staff staff = staffUsercaseService.findByAccountId(info.getAccountId());
+                        return accountMapper.fromInfo(info, staff, branch);
+                });
+        }
+
+        public Page<Account> findSuitableForBooking(Long branchId, LocalDate appointmentDate,
+                        LocalTime startAppointment, LocalTime endAppointment, PageRequestCustom pageRequestCustom) {
+                Page<Account> accounts = accountRepository
+                                .findSuitableForBooking(branchId, appointmentDate, startAppointment,
+                                                endAppointment, pageRequestCustom.pageRequest())
+                                .map(accountMapper::fromInfo);
+                return accounts;
+        }
 }

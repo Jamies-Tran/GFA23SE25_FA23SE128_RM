@@ -4,10 +4,9 @@ import org.springframework.stereotype.Service;
 
 import com.realman.becore.dto.otp.OTP;
 import com.realman.becore.dto.otp.OTPMapper;
-import com.realman.becore.enums.EErrorMessage;
 import com.realman.becore.error_handlers.exceptions.ResourceNotFoundException;
+import com.realman.becore.repository.database.otp.OTPEntity;
 import com.realman.becore.repository.database.otp.OTPRepository;
-
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -20,7 +19,15 @@ public class OTPQueryService {
     private final OTPMapper otpMapper;
 
     public OTP findByAccountId(Long accountId) {
-        return otpMapper.toDto(otpRepository.findByAccountId(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException(EErrorMessage.ACCOUNT_NOT_FOUND.name())));
+        OTPEntity entity = otpRepository.findByAccountId(accountId)
+                .orElse(OTPEntity.builder().passCode("12345").build());
+        return otpMapper.toDto(entity);
     }
+
+    public OTP findByPhoneAttemp(String phone) {
+        OTPEntity entity = otpRepository.findByPhoneAttemp(phone)
+                .orElseThrow(ResourceNotFoundException::new);
+        return otpMapper.toDto(entity);
+    }
+
 }

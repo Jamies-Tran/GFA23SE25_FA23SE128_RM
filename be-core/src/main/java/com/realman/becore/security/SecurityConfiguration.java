@@ -12,6 +12,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import com.realman.becore.security.filter.JwtAuthenticationFilter;
 import com.realman.becore.security.password_encoder.AppPasswordEncoder;
 import com.realman.becore.security.user_detail_service.CustomUserDetailService;
@@ -43,9 +47,20 @@ public class SecurityConfiguration {
                 .authenticationProvider(daoAuthenticationProvider).build();
     }
 
+    private CorsConfigurationSource configurationSource() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/v1/**", corsConfiguration);
+        source.registerCorsConfiguration("/v2/**", corsConfiguration);
+        return source;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.cors(t -> t.disable()).csrf(t -> t.disable())
+        return http.cors(t -> t.configurationSource(configurationSource())).csrf(t -> t.disable())
                 .sessionManagement(t -> t.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(
@@ -54,7 +69,8 @@ public class SecurityConfiguration {
                                 AntPathRequestMatcher.antMatcher("/v3/api-docs/*"),
                                 AntPathRequestMatcher.antMatcher("/v3/api-docs"),
                                 AntPathRequestMatcher.antMatcher("/v1/account/**"),
-                                AntPathRequestMatcher.antMatcher("/v1/otp/**")).permitAll())
+                                AntPathRequestMatcher.antMatcher("/v1/otp/**"),
+                                AntPathRequestMatcher.antMatcher("/v1/autocomplete/**")).permitAll())
 
                 .authorizeHttpRequests(t -> t.anyRequest().authenticated())
 

@@ -2,7 +2,7 @@ package com.realman.becore.repository.database.staff;
 
 import java.io.Serializable;
 
-import com.realman.becore.enums.EProfessional;
+import com.realman.becore.dto.enums.EProfessional;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,9 +11,11 @@ import jakarta.persistence.Id;
 
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Builder
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -25,5 +27,4 @@ public class StaffEntity implements Serializable {
     private Long staffId;
     private Long accountId;
     private EProfessional professional;
-    private Double averageRating = 0.0;
 }

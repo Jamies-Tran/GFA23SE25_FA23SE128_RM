@@ -2,6 +2,7 @@ package com.realman.becore.repository.database.rating;
 
 import java.io.Serializable;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +23,8 @@ public class RatingEntity implements Serializable {
     private Long ratingId;
     private Long staffId;
     private Long customerId;
+    private Long bookingServiceId;
+    @Column(columnDefinition = "TEXT", name = "feedback")
+    private String feedback;
     private Double point = 0.0;
-
 }

@@ -21,14 +21,14 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtConfiguration {
-    @Value("${JwtSecretKey}")
+    @Value("${jwt.secret.key}")
     private String jwtSecretKey;
-    @Value("${JwtExpiredTime}")
+    @Value("${jwt.expired.time}")
     private Long jwtExpiredTime;
 
-    public String generateJwt(String username) {
+    public String generateJwt(String phone) {
         Instant expiredTime = Instant.now().plusSeconds(jwtExpiredTime);
-        return Jwts.builder().setIssuedAt(new Date()).setExpiration(Date.from(expiredTime)).setSubject(username)
+        return Jwts.builder().setIssuedAt(new Date()).setExpiration(Date.from(expiredTime)).setSubject(phone)
                 .signWith(Keys.hmacShaKeyFor(jwtSecretKey.getBytes())).compact();
     }
 
@@ -36,7 +36,7 @@ public class JwtConfiguration {
         return LocalDateTime.ofInstant(Instant.now().plusSeconds(jwtExpiredTime), ZoneId.systemDefault());
     }
 
-    private Claims getClaimsFromJwt(String jwt) {
+    public Claims getClaimsFromJwt(String jwt) {
         return (Claims) Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(jwtSecretKey.getBytes())).build()
                 .parse(jwt).getBody();
     }
@@ -47,6 +47,7 @@ public class JwtConfiguration {
 
     public String getJwtFromRequestHeader(HttpServletRequest request) {
         String authorization = request.getHeader("Authorization");
+
         if (AppUtil.stringHasLength(authorization)) {
             if (authorization.startsWith("Bearer ")) {
                 String jwt = authorization.substring(7);
@@ -63,7 +64,7 @@ public class JwtConfiguration {
         try {
             Jwts.parserBuilder().setSigningKey(Keys.hmacShaKeyFor(jwtSecretKey.getBytes())).build().parse(jwt);
         } catch (MalformedJwtException | SignatureException | ExpiredJwtException | IllegalArgumentException exc) {
-            throw new InvalidJwtException(exc.getMessage());
+            throw new InvalidJwtException();
         }
     }
 }

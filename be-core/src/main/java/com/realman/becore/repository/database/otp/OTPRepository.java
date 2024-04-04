@@ -8,4 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface OTPRepository extends JpaRepository<OTPEntity, Long> {
     Optional<OTPEntity> findByAccountId(Long accountId);
+
+    Optional<OTPEntity> findByPhoneAttemp(String phone);
+
 }
