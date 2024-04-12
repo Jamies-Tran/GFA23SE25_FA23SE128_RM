@@ -1,60 +1,41 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import {
-  FormsModule,
-  NonNullableFormBuilder,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
-import { NzDividerModule } from 'ng-zorro-antd/divider';
-import { NzGridModule } from 'ng-zorro-antd/grid';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { NzTableModule } from 'ng-zorro-antd/table';
-import { AccountAddApi } from '../data-access/model/account-api.model';
+import { FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { NzFormModule } from 'ng-zorro-antd/form';
+import { NzInputModule } from 'ng-zorro-antd/input';
 import { NzSelectModule } from 'ng-zorro-antd/select';
-import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
-import { AccountApiService } from '../data-access/api/account.service';
-import { NzMessageService } from 'ng-zorro-antd/message';
-import { AccountStore } from '../data-access/store/account.store';
-import { provideComponentStore } from '@ngrx/component-store';
+import { CommonModule, NgOptimizedImage } from '@angular/common';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NzImageModule } from 'ng-zorro-antd/image';
+import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { RxLet } from '@rx-angular/template/let';
-import { NzSelectChangeDirective } from 'src/app/share/ui/directive/nz-select-change.directive';
-import { NzAutocompleteModule } from 'ng-zorro-antd/auto-complete';
+import { NzModalRef } from 'ng-zorro-antd/modal';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AccountAddApi, AccountUpdateApi } from '../data-access/model/account-api.model';
 import { differenceInCalendarDays } from 'date-fns';
+import { NzDatePickerModule } from 'ng-zorro-antd/date-picker';
+import { NzDividerModule } from 'ng-zorro-antd/divider';
 
 @Component({
-  selector: 'app-account',
+  selector: 'app-hangtag-add-or-update-modal',
   standalone: true,
   imports: [
-    CommonModule,
-    NzBreadCrumbModule,
-    NzDividerModule,
-    NzGridModule,
-    NzInputModule,
-    NzIconModule,
     NzButtonModule,
-    NzTableModule,
     NzFormModule,
-    FormsModule,
     ReactiveFormsModule,
+    NzIconModule,
+    NzInputModule,
     NzSelectModule,
-    NzDatePickerModule,
+    CommonModule,
+    NzImageModule,
+    NgOptimizedImage,
+    NzCheckboxModule,
     RxLet,
-    NzSelectChangeDirective,
-    NzAutocompleteModule
+    NzDatePickerModule,
+    NzDividerModule
   ],
-  providers: [NzMessageService, provideComponentStore(AccountStore)],
   template: `
-    <nz-breadcrumb>
-      <nz-breadcrumb-item>Quản lý tài khoản</nz-breadcrumb-item>
-      <nz-breadcrumb-item>Tạo tài khoản</nz-breadcrumb-item>
-    </nz-breadcrumb>
-    <nz-divider></nz-divider>
-    <div *rxLet="vm$ as vm">
-      <form nz-form [formGroup]="form">
+    <div>
+    <form nz-form [formGroup]="form">
         <div nz-row class="tw-ml-[12%]">
           <!-- first name -->
           <nz-form-item nz-col nzSpan="12" class="">
@@ -94,14 +75,12 @@ import { differenceInCalendarDays } from 'date-fns';
                 placeholder="Nhập địa chỉ"
                 [formControl]="form.controls.address"
                 nz-input
-                (input)="getAddress($event)"
-                [nzAutocomplete]="auto"
               />
-              <nz-autocomplete
+              <!-- <nz-autocomplete
                 [nzDataSource]="vm.addressData"
                 nzBackfill
                 #auto
-              ></nz-autocomplete>
+              ></nz-autocomplete> -->
             </nz-form-control>
           </nz-form-item>
 
@@ -170,7 +149,7 @@ import { differenceInCalendarDays } from 'date-fns';
         <nz-divider></nz-divider>
 
         <div nz-row class="tw-ml-[12%]">
-          <nz-form-item nz-col nzSpan="12" class="">
+          <!-- <nz-form-item nz-col nzSpan="12" class="">
             <nz-form-label class="tw-ml-3" nzRequired>Chi nhánh</nz-form-label>
             <nz-form-control>
               <nz-select
@@ -188,7 +167,7 @@ import { differenceInCalendarDays } from 'date-fns';
                 ></nz-option>
               </nz-select>
             </nz-form-control>
-          </nz-form-item>
+          </nz-form-item> -->
           <nz-form-item nz-col nzSpan="12" class="">
             <nz-form-label class="tw-ml-3">Địa chỉ chi nhánh</nz-form-label>
             <nz-form-control>
@@ -227,65 +206,30 @@ import { differenceInCalendarDays } from 'date-fns';
           </nz-form-item>
         </div>
       </form>
-      <div class="tw-text-center">
-        <button nz-button nzDanger nzType="primary" (click)="form.reset()">
-          Làm mới
-        </button>
-        <button
-          nz-button
-          nzType="primary"
-          class="tw-ml-4"
-          (click)="createAccount()"
-          [disabled]="form.invalid"
-        >
-          Tạo tài khoản
-        </button>
-      </div>
     </div>
+    <!-- <div *nzModalFooter>
+      <button nz-button nzType="default" (click)="onDestroyModal()">{{ 'CANCEL' | translate }}</button>
+      <button nz-button nzType="primary" (click)="onSubmit()" [disabled]="form.invalid">{{ 'SUBMIT' | translate }}</button>
+    </div> -->
   `,
   styles: [],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AccountComponent implements OnInit {
-  constructor(
-    private _fb: NonNullableFormBuilder,
-    private _accountSvc: AccountApiService,
-    private _nzMessageService: NzMessageService,
-    public aStore: AccountStore
-  ) {}
+export class AccountAddModalComponent implements OnInit {
+  @Input() form!: FormGroup<AccountAddApi.RequestFormGroup | AccountUpdateApi.RequestFormGroup>;
+  @Output() clickSubmit = new EventEmitter<void>();
 
-  vm$ = this.aStore.state$;
-  form = this.aStore.form;
-  model!: AccountAddApi.Request;
+  constructor(private _nzModalRef: NzModalRef, private _cdr: ChangeDetectorRef) {}
 
-  ngOnInit(): void {
-    this.aStore.getBranchName('');
+  ngOnInit() {
   }
 
-  createAccount() {
-    console.log(this.form.getRawValue());
-    this.model = this.form.getRawValue();
-    this._accountSvc.createAccount(this.model).subscribe(
-      (data) => {
-        this._nzMessageService.success('Đăng kí thành công.');
-      },
-      (error) => {
-        this._nzMessageService.error('Đăng kí thất bại.');
-      }
-    );
+  onSubmit() {
+    this.clickSubmit.emit();
   }
 
-  onSeachBranchName(branchName: string){
-    this.aStore.getBranchName(branchName);
-  }
-
-  onChangeLicense(branchId: number){
-    this.aStore.getBranchData(branchId)
-  }
-
-  getAddress(event: Event) {
-    const value = (event.target as HTMLInputElement).value;
-    this.aStore.getAddress(value);
+  onDestroyModal() {
+    this._nzModalRef.destroy();
   }
 
   today = new Date();
@@ -293,4 +237,5 @@ export class AccountComponent implements OnInit {
   disabledDate = (current: Date): boolean =>
     // Can not select days before today and today
     differenceInCalendarDays(current, this.today) > -6570;
+
 }

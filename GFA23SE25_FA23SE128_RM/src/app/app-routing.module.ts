@@ -8,7 +8,6 @@ import BRANCH_MANAGEMENT_ROUTES from './branch-management/branch-management.rout
 import SERVICE_MANAGEMENT_ROUTES from './service-management/service-management.routes';
 import SCHEDULE_MANAGEMENT_ROUTES from './schedule-management/schedule.routes';
 import { NotFoundComponent } from './share/ui/not-found.component';
-import { roleGuard } from './share/guard/role-guard';
 import { initializeApp } from 'firebase/app';
 import { environment } from 'src/environments/environment';
 import BOOKING_MANAGEMENT_ROUTES from './booking-management/booking-management.routes';
@@ -46,8 +45,6 @@ const routes: Routes = [
         loadChildren: () => BOOKING_MANAGEMENT_ROUTES,
       },
     ],
-    data: { role: ['SHOP_OWNER', 'RECEPTIONIST', 'BRANCH_MANAGER'] },
-    canActivate: [roleGuard],
   },
   { path: 'none', component: NotFoundComponent },
 ];

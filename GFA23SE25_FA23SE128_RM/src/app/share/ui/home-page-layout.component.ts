@@ -64,7 +64,6 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
                 nz-menu-item
                 nzMatchRouter
                 [routerLink]="['/account-management', 'account-list']"
-                *ngIf="role == 'SHOP_OWNER' || role == 'RECEPTIONIST' || role == 'BRANCH_MANAGER'"
               >
                 Danh sách nhân viên
               </li>
@@ -72,7 +71,6 @@ import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
                 nz-menu-item
                 [routerLink]="['/account-management', 'create-account']"
                 nzMatchRouter
-                *ngIf="role == 'SHOP_OWNER'"
               >
                 Tạo tài khoản
               </li>

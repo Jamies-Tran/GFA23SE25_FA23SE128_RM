@@ -32,9 +32,6 @@ import { NzMessageService } from 'ng-zorro-antd/message';
     RouterLink,
   ],
   template: `
-    <div class="tw-text-center tw-mt-3">
-      <span class="tw-text-2xl">Nhập số điện thoại</span>
-    </div>
     <form nz-form [formGroup]="validateForm" (ngSubmit)="submitForm()">
       <nz-form-item>
         <nz-form-control [nzErrorTip]="phoneErrorTpl" class="tw-text-center">
@@ -66,6 +63,17 @@ import { NzMessageService } from 'ng-zorro-antd/message';
         </ng-template>
       </nz-form-item>
       <nz-form-item>
+        <nz-form-control [nzErrorTip]="phoneErrorTpl" class="tw-text-center">
+          <input
+            class="tw-w-[85%] tw-rounded-full"
+            [formControl]="validateForm.controls.password"
+            nz-input
+            [type]="'password'"
+            placeholder="Nhấp số mật khẩu"
+          />
+        </nz-form-control>
+      </nz-form-item>
+      <nz-form-item>
         <nz-form-control class="tw-text-center">
           <button
             class="tw-w-[85%] tw-rounded-full tw-bg-gradient-to-r tw-from-gray-600 tw-to-gray-300"
@@ -73,7 +81,7 @@ import { NzMessageService } from 'ng-zorro-antd/message';
             nzType="primary"
             [disabled]="!validateForm.valid"
           >
-            Tiếp Tục
+            Đăng Nhập
           </button>
         </nz-form-control>
       </nz-form-item>
@@ -90,11 +98,9 @@ export class SignInComponent implements OnInit {
     private _nzMessageService: NzMessageService,
   ) {}
   validateForm!: FormGroup<SignInApi.RequestFormGroup>;
-  model: SignInApi.Request = {value : ""}
 
   submitForm(): void {
-    this.model = this.validateForm.getRawValue();
-    this._router.navigate(["/otp"])
+    this._router.navigate(["/homepage"])
     localStorage.setItem('phone', this.validateForm.controls.value.getRawValue())
     // this._siSvc
     //   .getOtp(this.model)
@@ -114,6 +120,7 @@ export class SignInComponent implements OnInit {
         Validators.maxLength(13),
         Validators.minLength(10),
       ]),
+      password: this._fb.control('', [trimRequired, Validators.minLength(6)])
     });
   }
 }

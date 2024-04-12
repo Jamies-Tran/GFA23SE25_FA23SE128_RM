@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, TemplateRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NzBreadCrumbModule } from 'ng-zorro-antd/breadcrumb';
 import { NzButtonModule } from 'ng-zorro-antd/button';
@@ -14,13 +14,17 @@ import { NzMessageService } from 'ng-zorro-antd/message';
 import { NzTableDefaultSettingDirective } from 'src/app/share/ui/directive/nz-table-default-setting.directive';
 import { RxLet } from '@rx-angular/template/let';
 import { MapRoleTypeNamePipe } from '../until/role.pipe';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NonNullableFormBuilder, Validators } from '@angular/forms';
 import {
   RoleType,
   roleTypeNameMapping,
 } from 'src/app/share/data-access/api/enum/role.enum';
 import { NzSelectModule } from 'ng-zorro-antd/select';
 import { NzSelectChangeDirective } from 'src/app/share/ui/directive/nz-select-change.directive';
+import { NzModalRef, NzModalService } from 'ng-zorro-antd/modal';
+import { AccountAddModalComponent } from '../ui/account-add-modal.component';
+import { AccountAddApi } from '../data-access/model/account-api.model';
+import { trimRequired } from 'src/app/share/form-validator/trim-required.validator';
 
 @Component({
   selector: 'app-account-list',
@@ -42,7 +46,7 @@ import { NzSelectChangeDirective } from 'src/app/share/ui/directive/nz-select-ch
     NzSelectModule,
     NzSelectChangeDirective,
   ],
-  providers: [provideComponentStore(AccountStore), NzMessageService],
+  providers: [provideComponentStore(AccountStore), NzMessageService, NzModalService],
   template: `
     <nz-breadcrumb>
       <nz-breadcrumb-item>Quản lý tài khoản</nz-breadcrumb-item>
@@ -69,7 +73,8 @@ import { NzSelectChangeDirective } from 'src/app/share/ui/directive/nz-select-ch
       <div nz-col nzSpan="2" class="tw-text-center">
         <button
           nz-button
-          [routerLink]="['/account-management', 'create-account']"
+          nzType="primary"
+          (click)="onAddAccount()"
         >
           Tạo tài khoản
         </button>
@@ -169,7 +174,7 @@ import { NzSelectChangeDirective } from 'src/app/share/ui/directive/nz-select-ch
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountListComponent {
-  constructor(public aStore: AccountStore) {}
+  constructor(public aStore: AccountStore, private _nzModalSvc: NzModalService, private _fb: NonNullableFormBuilder) {}
 
   vm$ = this.aStore.state$;
   role$ = localStorage.getItem('role$');
@@ -199,6 +204,45 @@ export class AccountListComponent {
     } else {
       this.aStore.getAccountPaging();
     }
+  }
+
+  onAddAccount() {
+    const modalRef = this._nzModalSvc.create({
+      nzTitle: 'Tạo Tài Khoản',
+      nzWidth: '1024px',
+      nzContent: AccountAddModalComponent,
+    });
+
+    const form = this._fb.group<AccountAddApi.RequestFormGroup>({
+      firstName: this._fb.control('', trimRequired),
+    lastName: this._fb.control('', [trimRequired]),
+    address: this._fb.control('', trimRequired),
+    dob: this._fb.control('', Validators.required),
+    gender: this._fb.control('', Validators.required),
+    phone: this._fb.control('', [
+      trimRequired,
+      Validators.minLength(10),
+      Validators.maxLength(10),
+    ]),
+    professional: this._fb.control(''),
+    branch: this._fb.control(-1),
+    thumbnailUrl: this._fb.control('123'),
+    branchAddress: this._fb.control({ value: '', disabled: true }),
+    numberStaffs: this._fb.control({ value: null, disabled: true }),
+    });
+
+
+    modalRef.componentInstance!.form = form;
+    // modalRef
+    //   .componentInstance!.clickSubmit.pipe(
+    //     tap(() => {
+    //       this._hStore.addHangtag({
+    //         model: PartnerHangtagAddApi.mapModelAdd(form),
+    //         modalRef,
+    //       });
+    //     })
+    //   )
+    //   .subscribe();
   }
 
   readonly roleTypeNameMapping = roleTypeNameMapping;
