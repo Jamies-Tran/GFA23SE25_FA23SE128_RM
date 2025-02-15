@@ -66,7 +66,6 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // key: _bottomNavigationKey,
         body: pageChooser(bottomIndex),
         bottomNavigationBar: CurvedNavigationBar(
           key: _bottomNavigationKey,

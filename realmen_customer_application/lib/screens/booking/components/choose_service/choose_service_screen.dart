@@ -397,23 +397,15 @@ class ServiceCategoryTile extends StatelessWidget {
 }
 
 class SubServiceTile extends StatefulWidget {
-  final String? title;
-  final String? price;
-  final String? image;
   final Function(bool) onSelect; // Hàm callback
   final List<BranchServiceModel> selectedServices;
   final BranchServiceModel? branchService;
-  final String? description;
 
   const SubServiceTile({
     Key? key,
-    this.title,
-    this.price,
-    this.image,
     required this.onSelect,
     required this.selectedServices,
     this.branchService,
-    this.description,
   }) : super(key: key);
 
   @override
